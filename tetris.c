@@ -154,11 +154,14 @@ void new_piece(struct piece *held)
 	update_bitmap(held);
 }
 
-void rotate(struct piece *held)
+void rotate(struct piece *held, int direction)
 {
-	held->rotation++;
+	held->rotation += direction;
 	if (held->rotation >= 4)
 		held->rotation -= 4;
+
+	if (held->rotation < 0)
+		held->rotation += 4;
 
 	update_bitmap(held);
 }
@@ -196,6 +199,7 @@ void main_loop()
 	struct colour *board[WIDTH_CELLS][HEIGHT_CELLS];
 	SDL_Event e = {0};
 	bool running = false;
+	int i = 0;
 	int x = 0;
 	int y = 0;
 	int last_x = 0;
@@ -215,14 +219,13 @@ void main_loop()
 	{
 		lockout = 0;
 		clear_rows(&board);
+
 		if (hit_side(x, y, &held, &board))
-		{
 			x = last_x;
-		}
+
 		if (hit_floor(x, y, &held, &board))
-		{
 			lockout = 1;
-		}
+
 		draw_board(&board);
 		draw_piece(x, y, held.colour, held.bitmap);
 		plot_update();
@@ -251,7 +254,13 @@ void main_loop()
 					{
 						case SDLK_a: last_x = x--; break;
 						case SDLK_d: last_x = x++; break;
-						case SDLK_w: rotate(&held); break;
+						case SDLK_w:
+							i = 0;
+							do
+							{
+								rotate(&held, 1);
+							} while(hit_side(x, y, &held, &board) && i++ < 4);
+							break;
 						case SDLK_q:
 							running = false;
 							break;
