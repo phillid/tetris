@@ -11,15 +11,7 @@
 #define TETROMINO_WIDTH  4
 #define TETROMINO_HEIGHT 4
 #define TETROMINO_AREA   (TETROMINO_HEIGHT*TETROMINO_WIDTH)
-
-
 #define MIN(a,b)         (a<b? a : b)
-
-
-void main_loop();
-
-
-
 
 struct colour palette[] = {
 	{.r=0x00,.g=0x00,.b=0x00},
@@ -31,7 +23,6 @@ struct colour palette[] = {
 	{.r=0xFF,.g=0xFF,.b=0x00},
 	{.r=0xFF,.g=0xFF,.b=0xFF}
 };
-
 
 void draw_board(struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
 {
@@ -90,14 +81,6 @@ Uint32 gravity_callback(Uint32 interval, void *param)
 	return interval;
 }
 
-int main()
-{
-	srand(time(NULL));
-	plot_init();
-	main_loop();
-}
-
-
 int hit_floor(int x, int y, struct piece *held, struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
 {
 	int px,py;
@@ -154,9 +137,11 @@ void new_piece(struct piece *held)
 	update_bitmap(held);
 }
 
+
 void rotate(struct piece *held, int direction)
 {
 	held->rotation += direction;
+	/* FIXME need to handle direction not in [-4, 4] */
 	if (held->rotation >= 4)
 		held->rotation -= 4;
 
@@ -272,3 +257,13 @@ void main_loop()
 		}
 	}
 }
+
+int main()
+{
+	srand(time(NULL));
+	plot_init();
+	main_loop();
+}
+
+
+
