@@ -6,12 +6,14 @@
 static SDL_Window *window = NULL;
 static SDL_Renderer *renderer = NULL;
 
-void plot_update()
+void
+plot_update(void)
 {
 	SDL_RenderPresent(renderer);
 }
 
-void plot_rect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, struct colour *c)
+void
+plot_rect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, struct colour *c)
 {
 	SDL_Rect rect;
 
@@ -25,7 +27,8 @@ void plot_rect(unsigned int x, unsigned int y, unsigned int width, unsigned int 
 	SDL_RenderFillRect(renderer, &rect);
 }
 
-void plot_cell(unsigned int x, unsigned int y, struct colour *c)
+void
+plot_cell(unsigned int x, unsigned int y, struct colour *c)
 {
 	plot_rect(
 		x*CELL_SIZE+(x-1)*BORDER_THICKNESS,
@@ -36,17 +39,18 @@ void plot_cell(unsigned int x, unsigned int y, struct colour *c)
 	);
 }
 
-void plot_clear()
+void
+plot_clear(void)
 {
 	/* blank out the background with black */
 	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
 	SDL_RenderFillRect(renderer, NULL);
 }
 
-int plot_init()
+int
+plot_init(void)
 {
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-	{
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		fprintf(stderr, "Failed to init SDL video: %s\n", SDL_GetError());
 		return 1;
 	}
@@ -60,15 +64,13 @@ int plot_init()
 		SDL_WINDOW_SHOWN
 	);
 
-	if (window == NULL)
-	{
+	if (window == NULL) {
 		fprintf(stderr, "Failed to create window: %s\n", SDL_GetError());
 		return 1;
 	}
 
 	renderer = SDL_CreateRenderer(window, 0, 0);
-	if (renderer == NULL)
-	{
+	if (renderer == NULL) {
 		fprintf(stderr, "Failed to get window renderer: %s\n", SDL_GetError());
 		return 1;
 	}

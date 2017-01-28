@@ -24,20 +24,20 @@ struct colour palette[] = {
 	{.r=0xFF,.g=0xFF,.b=0xFF}
 };
 
-void draw_board(struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
+void
+draw_board(struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
 {
 	unsigned int x,y;
 	plot_clear();
-	for (y = 0; y < HEIGHT_CELLS; y++)
-	{
-		for (x = 0; x < WIDTH_CELLS; x++)
-		{
+	for (y = 0; y < HEIGHT_CELLS; y++) {
+		for (x = 0; x < WIDTH_CELLS; x++) {
 			plot_cell(x,y, (*board)[x][y]);
 		}
 	}
 }
 
-void draw_piece(int x, int y, struct colour *c, char (*piece)[4][4])
+void
+draw_piece(int x, int y, struct colour *c, char (*piece)[4][4])
 {
 	int px, py, ipx, ipy, end_x, end_y, wx, wy;
 	ipx = (x < 0)? -x : 0;
@@ -51,7 +51,8 @@ void draw_piece(int x, int y, struct colour *c, char (*piece)[4][4])
 				plot_cell(wx, wy, c);
 }
 
-void drop_piece(int x, int y, struct piece *piece, struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
+void
+drop_piece(int x, int y, struct piece *piece, struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
 {
 	int px, py, ipx, ipy, end_x, end_y, wx, wy;
 	ipx = (x < 0)? -x : 0;
@@ -65,7 +66,8 @@ void drop_piece(int x, int y, struct piece *piece, struct colour* (*board)[WIDTH
 				(*board)[wx][wy] = piece->colour;
 }
 
-Uint32 gravity_callback(Uint32 interval, void *param)
+Uint32
+gravity_callback(Uint32 interval, void *param)
 {
 	(void)param; /* solves unused parameter warn+error */
 	SDL_Event e;
@@ -82,11 +84,11 @@ Uint32 gravity_callback(Uint32 interval, void *param)
 	return interval;
 }
 
-int hit_floor(int x, int y, struct piece *held, struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
+int
+hit_floor(int x, int y, struct piece *held, struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
 {
 	int px,py;
-	for (px = 0; px < 4; px++)
-	{
+	for (px = 0; px < 4; px++) {
 		/* seek to first cell of column */
 		py = 0;
 		while (py < 4 && (*held->bitmap)[px][py] == 0)
@@ -106,13 +108,12 @@ int hit_floor(int x, int y, struct piece *held, struct colour* (*board)[WIDTH_CE
 	return 0;
 }
 
-int hit_side(int x, int y, struct piece *held, struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
+int
+hit_side(int x, int y, struct piece *held, struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
 {
 	int px,py;
-	for (py = 0; py < 4; py++)
-	{
-		for (px = 0; px < 4; px++)
-		{
+	for (py = 0; py < 4; py++) {
+		for (px = 0; px < 4; px++) {
 			if ((*held->bitmap)[px][py]
 			    &&
 			    (  x + px >= WIDTH_CELLS
@@ -125,12 +126,14 @@ int hit_side(int x, int y, struct piece *held, struct colour* (*board)[WIDTH_CEL
 	return 0;
 }
 
-void update_bitmap(struct piece *held)
+void
+update_bitmap(struct piece *held)
 {
 	held->bitmap = &(tetrominoes[0][held->type][held->rotation]);
 }
 
-void new_piece(struct piece *held)
+void
+new_piece(struct piece *held)
 {
 	held->colour = &palette[rand() % 7 + 1];
 	held->type = rand()%7;
@@ -139,7 +142,8 @@ void new_piece(struct piece *held)
 }
 
 
-void rotate(struct piece *held, int direction)
+void
+rotate(struct piece *held, int direction)
 {
 	held->rotation += direction;
 	/* FIXME need to handle direction not in [-4, 4] */
@@ -153,17 +157,15 @@ void rotate(struct piece *held, int direction)
 }
 
 
-void clear_rows(struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
+void
+clear_rows(struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
 {
 	char row;
 	int x, y, x1, y1;
-	for (y = 0; y < HEIGHT_CELLS; y++)
-	{
+	for (y = 0; y < HEIGHT_CELLS; y++) {
 		row = 1;
-		for (x = 0; x < WIDTH_CELLS; x++)
-		{
-			if ((*board)[x][y] == &(palette[0]))
-			{
+		for (x = 0; x < WIDTH_CELLS; x++) {
+			if ((*board)[x][y] == &(palette[0])) {
 				row = 0;
 				break;
 			}
@@ -180,7 +182,8 @@ void clear_rows(struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
 	}
 }
 
-void main_loop()
+void
+main_loop()
 {
 	struct colour *board[WIDTH_CELLS][HEIGHT_CELLS];
 	SDL_Event e = {0};
@@ -202,8 +205,7 @@ void main_loop()
 	SDL_AddTimer(500, &gravity_callback, NULL);
 	char lockout;
 	
-	while (running)
-	{
+	while (running) {
 		lockout = 0;
 		clear_rows(&board);
 
@@ -217,54 +219,48 @@ void main_loop()
 		draw_piece(x, y, held.colour, held.bitmap);
 		plot_update();
 		SDL_WaitEvent(&e);
-		switch (e.type)
-		{
-			case SDL_USEREVENT:
-				if (lockout) {
-					drop_piece(x, y, &held, &board);
-					last_x = last_y = x = y = 0;
-					new_piece(&held);
-					lockout = 0;
-				} else {
-					last_y = y++; /* gravity */
-					last_x = x;
-				}
+		switch (e.type) {
+		case SDL_USEREVENT:
+			if (lockout) {
+				drop_piece(x, y, &held, &board);
+				last_x = last_y = x = y = 0;
+				new_piece(&held);
+				lockout = 0;
+			} else {
+				last_y = y++; /* gravity */
+				last_x = x;
+			}
+			break;
+		case SDL_QUIT:
+			fprintf(stderr, "quit\n");
+			running = false;
+			break;
+		case SDL_KEYDOWN:
+			switch (e.key.keysym.sym)
+			{
+			case SDLK_a: last_x = x--; break;
+			case SDLK_d: last_x = x++; break;
+			case SDLK_w:
+				i = 0;
+				do {
+					rotate(&held, 1);
+				} while(hit_side(x, y, &held, &board) && i++ < 4);
 				break;
-			case SDL_QUIT:
-				fprintf(stderr, "quit\n");
+			case SDLK_q:
 				running = false;
 				break;
-			
-			case SDL_KEYDOWN:
-				switch (e.key.keysym.sym)
-				{
-					case SDLK_a: last_x = x--; break;
-					case SDLK_d: last_x = x++; break;
-					case SDLK_w:
-						i = 0;
-						do
-						{
-							rotate(&held, 1);
-						} while(hit_side(x, y, &held, &board) && i++ < 4);
-						break;
-					case SDLK_q:
-						running = false;
-						break;
-				}
-				break;
-			default:
-				break;
+			}
+			break;
+		default:
+			break;
 		}
-		//}
 	}
 }
 
-int main()
+int
+main(int argc, char **argv)
 {
 	srand(time(NULL));
 	plot_init();
 	main_loop();
 }
-
-
-

@@ -1,8 +1,8 @@
 void plot_rect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, struct colour *c);
 void plot_cell(unsigned int x, unsigned int y, struct colour *c);
-void plot_clear();
-int plot_init();
-void plot_update();
+void plot_clear(void);
+int plot_init(void);
+void plot_update(void);
 
 #define CELL_SIZE          25
 #define BORDER_THICKNESS   2
