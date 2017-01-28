@@ -36,32 +36,12 @@ void plot_cell(unsigned int x, unsigned int y, struct colour *c)
 	);
 }
 
-void plot_cell_borders()
+void plot_clear()
 {
-	int i, j;
-
-	struct colour col = {.r = 0, .g = 0, .b = 0};
-
-	for (i = 1; i < WIDTH_CELLS; i++)
-	{
-		j = i*CELL_SIZE + (i-1)*BORDER_THICKNESS;
-		plot_rect(
-			j, 0,
-			BORDER_THICKNESS, HEIGHT_PIXELS,
-			&col);
-	}
-
-	for (i = 1; i < HEIGHT_CELLS; i++)
-	{
-		j = i*CELL_SIZE + (i-1)*BORDER_THICKNESS;
-		plot_rect(
-			0, j,
-			WIDTH_PIXELS, BORDER_THICKNESS,
-			&col);
-	}
-
+	/* blank out the background with black */
+	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
+	SDL_RenderFillRect(renderer, NULL);
 }
-
 
 int plot_init()
 {
@@ -93,11 +73,7 @@ int plot_init()
 		return 1;
 	}
 
-	/* blank out the background with gray */
-	SDL_SetRenderDrawColor(renderer, 0x33, 0x33, 0x33, 0xFF);
-	SDL_RenderFillRect(renderer, NULL);
-
-	plot_cell_borders();
+	plot_clear();
 
 	return 0;
 }

@@ -1,6 +1,6 @@
 void plot_rect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, struct colour *c);
 void plot_cell(unsigned int x, unsigned int y, struct colour *c);
-void plot_cell_borders();
+void plot_clear();
 int plot_init();
 void plot_update();
 

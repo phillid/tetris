@@ -27,6 +27,7 @@ struct colour palette[] = {
 void draw_board(struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
 {
 	unsigned int x,y;
+	plot_clear();
 	for (y = 0; y < HEIGHT_CELLS; y++)
 	{
 		for (x = 0; x < WIDTH_CELLS; x++)
