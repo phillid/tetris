@@ -200,6 +200,7 @@ void main_loop()
 	last_x = last_y = x = y = 0;
 	SDL_AddTimer(500, &gravity_callback, NULL);
 	char lockout;
+	
 	while (running)
 	{
 		lockout = 0;
@@ -214,47 +215,46 @@ void main_loop()
 		draw_board(&board);
 		draw_piece(x, y, held.colour, held.bitmap);
 		plot_update();
-		while(SDL_PollEvent(&e))
+		SDL_WaitEvent(&e);
+		switch (e.type)
 		{
-			switch (e.type)
-			{
-				case SDL_USEREVENT:
-					if (lockout) {
-						drop_piece(x, y, &held, &board);
-						last_x = last_y = x = y = 0;
-						new_piece(&held);
-						lockout = 0;
-					} else {
-						last_y = y++; /* gravity */
-						last_x = x;
-					}
-					break;
-				case SDL_QUIT:
-					fprintf(stderr, "quit\n");
-					running = false;
-					break;
-				
-				case SDL_KEYDOWN:
-					switch (e.key.keysym.sym)
-					{
-						case SDLK_a: last_x = x--; break;
-						case SDLK_d: last_x = x++; break;
-						case SDLK_w:
-							i = 0;
-							do
-							{
-								rotate(&held, 1);
-							} while(hit_side(x, y, &held, &board) && i++ < 4);
-							break;
-						case SDLK_q:
-							running = false;
-							break;
-					}
-					break;
-				default:
-					break;
-			}
+			case SDL_USEREVENT:
+				if (lockout) {
+					drop_piece(x, y, &held, &board);
+					last_x = last_y = x = y = 0;
+					new_piece(&held);
+					lockout = 0;
+				} else {
+					last_y = y++; /* gravity */
+					last_x = x;
+				}
+				break;
+			case SDL_QUIT:
+				fprintf(stderr, "quit\n");
+				running = false;
+				break;
+			
+			case SDL_KEYDOWN:
+				switch (e.key.keysym.sym)
+				{
+					case SDLK_a: last_x = x--; break;
+					case SDLK_d: last_x = x++; break;
+					case SDLK_w:
+						i = 0;
+						do
+						{
+							rotate(&held, 1);
+						} while(hit_side(x, y, &held, &board) && i++ < 4);
+						break;
+					case SDLK_q:
+						running = false;
+						break;
+				}
+				break;
+			default:
+				break;
 		}
+		//}
 	}
 }
 
