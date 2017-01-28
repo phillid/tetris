@@ -8,6 +8,7 @@
 #include "tetromino.h"
 #include "plot.h"
 
+#define VERSION "1.0"
 #define TETROMINO_WIDTH  4
 #define TETROMINO_HEIGHT 4
 #define TETROMINO_AREA   (TETROMINO_HEIGHT*TETROMINO_WIDTH)
@@ -260,6 +261,17 @@ main_loop()
 int
 main(int argc, char **argv)
 {
+	char *argument = NULL;
+
+	if (argc >= 2) {
+		argument = argv[1];
+		if (strcmp(argument, "-v") == 0) {
+			fprintf(stderr, "tetris "VERSION"\n");
+		} else {
+			fprintf(stderr, "%s [-v]\n", argv[0]);
+		}
+		return 0;
+	}
 	srand(time(NULL));
 	plot_init();
 	main_loop();
