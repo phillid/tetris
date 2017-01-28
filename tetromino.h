@@ -1,19 +1,8 @@
 #define TETROMINO_WIDTH  4
 #define TETROMINO_HEIGHT 4
 #define TETROMINO_AREA   (TETROMINO_HEIGHT*TETROMINO_WIDTH)
-/*
-struct tetromino {
-	char name;
-	uint8_t r;
-	uint8_t g;
-	uint8_t b;
-	unsigned int width;
-	unsigned int height;
-	char data[4][16];
-};*/
 
-struct piece
-{
+struct piece {
 	struct colour *colour;
 	char (*bitmap)[4][4];
 	int type;
@@ -44,7 +33,6 @@ char tetromino_I[4][4][4] = {
 	}
 };
 
-
 char tetromino_J[4][4][4] = {
 	{
 		{1,0,0,0},
@@ -68,7 +56,6 @@ char tetromino_J[4][4][4] = {
 		{0,0,0,0}
 	}
 };
-
 
 char tetromino_L[4][4][4] = {
 	{
@@ -94,7 +81,6 @@ char tetromino_L[4][4][4] = {
 	}
 };
 
-
 char tetromino_O[4][4][4]= {
 	{
 		{0,1,1,0},
@@ -118,7 +104,6 @@ char tetromino_O[4][4][4]= {
 		{0,0,0,0}
 	}
 };
-
 
 char tetromino_S[4][4][4] = {
 	{
@@ -192,9 +177,6 @@ char tetromino_Z[4][4][4] = {
 		{0,0,0,0}
 	}
 };
-
-
-
 
 char (*tetrominoes[])[4][4][4] = {
 	&tetromino_I,
