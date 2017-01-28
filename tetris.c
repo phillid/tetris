@@ -94,11 +94,11 @@ hit_floor(int x, int y, struct piece *held, struct colour* (*board)[WIDTH_CELLS]
 		py = 0;
 		while (py < 4 && (*held->bitmap)[px][py] == 0)
 			py++;
-		
+
 		/* column has no cells? no collision possible. NEXT! */
 		if (py == 4)
 			continue;
-		
+
 		while (py < 4 && (*held->bitmap)[px][py])
 			py++;
 
@@ -142,7 +142,6 @@ new_piece(struct piece *held)
 	update_bitmap(held);
 }
 
-
 void
 rotate(struct piece *held, int direction)
 {
@@ -156,7 +155,6 @@ rotate(struct piece *held, int direction)
 
 	update_bitmap(held);
 }
-
 
 void
 clear_rows(struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
@@ -173,11 +171,11 @@ clear_rows(struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
 		}
 		if (!row)
 			continue;
-		
+
 		for (y1 = y; y1 > 0; y1--)
 			for (x1 = 0; x1 < WIDTH_CELLS; x1++)
 				(*board)[x1][y1] = (*board)[x1][y1-1];
-		
+
 		for (x1 = 0; x1 < WIDTH_CELLS; x1++)
 			(*board)[x1][y1] = &(palette[0]);
 	}
@@ -196,16 +194,16 @@ main_loop()
 	int last_y = 1;
 	struct piece held;
 	new_piece(&held);
-	
+
 	for (y = 0; y < HEIGHT_CELLS; y++)
 		for (x = 0; x < WIDTH_CELLS; x++)
 			board[x][y] = &(palette[0]);
-	
+
 	running = true;
 	last_x = last_y = x = y = 0;
 	SDL_AddTimer(500, &gravity_callback, NULL);
 	char lockout;
-	
+
 	while (running) {
 		lockout = 0;
 		clear_rows(&board);
