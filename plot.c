@@ -56,7 +56,7 @@ plot_init(void)
 	}
 
 	window = SDL_CreateWindow(
-		"Some title",
+		"Tetris Clone",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		WIDTH_PIXELS,
