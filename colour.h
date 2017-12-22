@@ -1,5 +1,5 @@
 struct colour {
-	char r;
-	char g;
-	char b;
+	unsigned char r;
+	unsigned char g;
+	unsigned char b;
 };

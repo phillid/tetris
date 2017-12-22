@@ -248,6 +248,8 @@ main_loop()
 			case SDLK_q:
 				running = false;
 				break;
+			default:
+				break;
 			}
 			break;
 		default:
