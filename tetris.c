@@ -14,6 +14,12 @@
 #define TETROMINO_AREA   (TETROMINO_HEIGHT*TETROMINO_WIDTH)
 #define MIN(a,b)         (a<b? a : b)
 
+#define INTERVAL_SPEED   50
+#define INTERVAL_NORMAL  500
+
+static unsigned int speed_mode;
+static unsigned int pause_mode;
+
 struct colour palette[] = {
 	{.r=0x00,.g=0x00,.b=0x00},
 	{.r=0x00,.g=0x00,.b=0xFF},
@@ -70,7 +76,8 @@ drop_piece(int x, int y, struct piece *piece, struct colour* (*board)[WIDTH_CELL
 Uint32
 gravity_callback(Uint32 interval, void *param)
 {
-	(void)param; /* solves unused parameter warn+error */
+	(void)interval;
+	(void)param;
 	SDL_Event e;
 	SDL_UserEvent ue;
 	ue.type = SDL_USEREVENT;
@@ -82,7 +89,7 @@ gravity_callback(Uint32 interval, void *param)
 	e.user = ue;
 
 	SDL_PushEvent(&e);
-	return interval;
+	return speed_mode ? INTERVAL_SPEED : INTERVAL_NORMAL;
 }
 
 int
@@ -201,7 +208,7 @@ main_loop()
 
 	running = true;
 	last_x = last_y = x = y = 0;
-	SDL_AddTimer(500, &gravity_callback, NULL);
+	SDL_AddTimer(INTERVAL_NORMAL, &gravity_callback, NULL);
 	char lockout;
 
 	while (running) {
@@ -218,6 +225,13 @@ main_loop()
 		draw_piece(x, y, held.colour, held.bitmap);
 		plot_update();
 		SDL_WaitEvent(&e);
+		if (pause_mode) {
+			if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_p) {
+				pause_mode = 0;
+			}
+			continue;
+		}
+
 		switch (e.type) {
 		case SDL_USEREVENT:
 			if (lockout) {
@@ -237,6 +251,7 @@ main_loop()
 		case SDL_KEYDOWN:
 			switch (e.key.keysym.sym)
 			{
+			case SDLK_p: pause_mode = 1; break;
 			case SDLK_a: last_x = x--; break;
 			case SDLK_d: last_x = x++; break;
 			case SDLK_w:
@@ -245,6 +260,9 @@ main_loop()
 					rotate(&held, 1);
 				} while(hit_side(x, y, &held, &board) && i++ < 4);
 				break;
+			case SDLK_s:
+				speed_mode = 1;
+				break;
 			case SDLK_q:
 				running = false;
 				break;
@@ -252,6 +270,15 @@ main_loop()
 				break;
 			}
 			break;
+		case SDL_KEYUP:
+			switch (e.key.keysym.sym)
+			{
+			case SDLK_s:
+				speed_mode = 0;
+				break;
+			default:
+				break;
+		}
 		default:
 			break;
 		}
@@ -262,6 +289,9 @@ int
 main(int argc, char **argv)
 {
 	char *argument = NULL;
+
+	speed_mode = 0;
+	pause_mode = 0;
 
 	if (argc >= 2) {
 		argument = argv[1];
