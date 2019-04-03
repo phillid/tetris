@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 #include "colour.h"
 #include "plot.h"
@@ -37,6 +38,30 @@ plot_cell(unsigned int x, unsigned int y, struct colour *c)
 		CELL_SIZE,
 		c
 	);
+}
+
+void
+plot_text(const char *message, TTF_Font *font, SDL_Color color, int x, int y)
+{
+	SDL_Texture *texture = NULL;
+	SDL_Rect dst;
+	dst.x = x;
+	dst.y = y;
+	SDL_Surface *surf = TTF_RenderUTF8_Blended(font, message, color);
+	if (!surf) {
+		printf("Error in TTF_RenderUTF8_Blended\n");
+		return;
+	}
+	texture = SDL_CreateTextureFromSurface(renderer, surf);
+	if (!texture){
+		printf("Error in SDL_CreateTextureFromSurface\n");
+	}
+	SDL_FreeSurface(surf);
+
+	SDL_QueryTexture(texture, NULL, NULL, &dst.w, &dst.h);
+	SDL_RenderCopy(renderer, texture, NULL, &dst);
+
+	SDL_DestroyTexture(texture);
 }
 
 void

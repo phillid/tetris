@@ -2,11 +2,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <time.h>
 
 #include "colour.h"
 #include "tetromino.h"
 #include "plot.h"
+
+#define FONT_FILE "/usr/share/fonts/TTF/arial.ttf"
+#define FONT_SIZE 16
 
 #define VERSION "1.0"
 #define TETROMINO_WIDTH  4
@@ -163,9 +167,10 @@ rotate(struct piece *held, int direction)
 	update_bitmap(held);
 }
 
-void
+int
 clear_rows(struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
 {
+	int rows = 0;
 	char row;
 	int x, y, x1, y1;
 	for (y = 0; y < HEIGHT_CELLS; y++) {
@@ -179,6 +184,8 @@ clear_rows(struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
 		if (!row)
 			continue;
 
+		rows++;
+
 		for (y1 = y; y1 > 0; y1--)
 			for (x1 = 0; x1 < WIDTH_CELLS; x1++)
 				(*board)[x1][y1] = (*board)[x1][y1-1];
@@ -186,6 +193,7 @@ clear_rows(struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
 		for (x1 = 0; x1 < WIDTH_CELLS; x1++)
 			(*board)[x1][y1] = &(palette[0]);
 	}
+	return rows;
 }
 
 void
@@ -197,10 +205,17 @@ main_loop()
 	int i = 0;
 	int x = 0;
 	int y = 0;
+	int score = 0;
 	int last_x = 0;
 	int last_y = 1;
 	struct piece held;
 	new_piece(&held);
+
+	TTF_Font *font = TTF_OpenFont(FONT_FILE, FONT_SIZE);
+	if (!font) {
+		printf("TTF_OpenFont: %s\n", TTF_GetError());
+		return;
+	}
 
 	for (y = 0; y < HEIGHT_CELLS; y++)
 		for (x = 0; x < WIDTH_CELLS; x++)
@@ -213,7 +228,7 @@ main_loop()
 
 	while (running) {
 		lockout = 0;
-		clear_rows(&board);
+		score += clear_rows(&board);
 
 		if (hit_side(x, y, &held, &board))
 			x = last_x;
@@ -223,6 +238,10 @@ main_loop()
 
 		draw_board(&board);
 		draw_piece(x, y, held.colour, held.bitmap);
+		char score_string[16];
+		snprintf(score_string, sizeof(score_string), "Score: %d", score);
+		score_string[sizeof(score_string) - 1] = '\0';
+		plot_text(score_string, font, ((SDL_Color){255,255,255,255}), 10, 10);
 		plot_update();
 		SDL_WaitEvent(&e);
 		if (pause_mode) {
@@ -289,6 +308,7 @@ int
 main(int argc, char **argv)
 {
 	char *argument = NULL;
+	TTF_Init();
 
 	speed_mode = 0;
 	pause_mode = 0;

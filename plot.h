@@ -1,5 +1,6 @@
 void plot_rect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, struct colour *c);
 void plot_cell(unsigned int x, unsigned int y, struct colour *c);
+void plot_text(const char *message, TTF_Font *font, SDL_Color color, int x, int y);
 void plot_clear(void);
 int plot_init(void);
 void plot_update(void);
