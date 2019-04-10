@@ -196,12 +196,27 @@ clear_rows(struct colour* (*board)[WIDTH_CELLS][HEIGHT_CELLS])
 	return rows;
 }
 
+int
+piece_overlaps(struct piece *held, struct colour *(*board)[WIDTH_CELLS][HEIGHT_CELLS], int piece_x, int piece_y)
+{
+	int x = 0;
+	int y = 0;
+
+	for (y = 0; y < TETROMINO_HEIGHT; y++)
+		for (x = 0; x < TETROMINO_WIDTH; x++)
+			if (held->bitmap[x][y] && (*board)[piece_x + x][piece_y + y] != &(palette[0]))
+				return 1;
+
+	return 0;
+}
+
 void
 main_loop()
 {
 	struct colour *board[WIDTH_CELLS][HEIGHT_CELLS];
 	SDL_Event e = {0};
 	bool running = false;
+	bool game_over = false;
 	int i = 0;
 	int x = 0;
 	int y = 0;
@@ -237,11 +252,18 @@ main_loop()
 			lockout = 1;
 
 		draw_board(&board);
-		draw_piece(x, y, held.colour, held.bitmap);
+
+		if (!game_over)
+			draw_piece(x, y, held.colour, held.bitmap);
+
 		char score_string[16];
 		snprintf(score_string, sizeof(score_string), "Score: %d", score);
 		score_string[sizeof(score_string) - 1] = '\0';
 		plot_text(score_string, font, ((SDL_Color){255,255,255,255}), 10, 10);
+
+		if (game_over)
+			plot_text("Game over", font, ((SDL_Color){255,255,255,255}), 90, 50);
+
 		plot_update();
 		SDL_WaitEvent(&e);
 		if (pause_mode) {
@@ -253,10 +275,14 @@ main_loop()
 
 		switch (e.type) {
 		case SDL_USEREVENT:
-			if (lockout) {
+			if (lockout && !game_over) {
 				drop_piece(x, y, &held, &board);
 				last_x = last_y = x = y = 0;
 				new_piece(&held);
+				if (piece_overlaps(&held, &board, x, y)) {
+					game_over = true;
+				}
+
 				lockout = 0;
 			} else {
 				last_y = y++; /* gravity */
